@@ -92,7 +92,7 @@ if [ $1 ]; then
 
 	case $cpu_arch in
 		"x86_64" | *"amd64"*)
-			docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host --user 0:0 --restart always amilys/embyserver:4.8.0.56
+			docker run -d --privileged=true --name emby -v $1/config:/config -v $1/xiaoya:/media --device /dev/dri:/dev/dri --net=host --user 0:0 --restart always amilys/embyserver:4.8.0.56
 			;;
 		"aarch64" | *"arm64"* | *"armv8"* | *"arm/v8"*)
 		        docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host  --user 0:0 --restart always amilys/embyserver_arm64v8:4.8.0.56
