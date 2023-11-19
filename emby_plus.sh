@@ -6,10 +6,10 @@ if [ $1 ]; then
 	cpu_arch=$(uname -m)
 	case $cpu_arch in
                 "x86_64" | *"amd64"*)
-                        docker pull amilys/embyserver:4.8.0.58
+                        docker pull emby/embyserver:4.8.0.56
 			;;
                 "aarch64" | *"arm64"* | *"armv8"* | *"arm/v8"*)
-                        docker pull amilys/embyserver_arm64v8:4.8.0.58
+                        docker pull emby/embyserver_arm64v8:4.8.0.56
                         ;;
                 *)
                         echo "目前只支持intel64和amd64架构，你的架构是：$cpu_arch"
@@ -17,7 +17,7 @@ if [ $1 ]; then
                         ;;
         esac
 	
-	docker_exist=$(docker images |grep amilys/embyserver |grep 4.8.0.58)
+	docker_exist=$(docker images |grep emby/embyserver |grep 4.8.0.56)
 	if [ -z "$docker_exist" ]; then
 		echo "拉取镜像失败，请检查网络，或者翻墙后再试"
 		exit 1
@@ -92,10 +92,10 @@ if [ $1 ]; then
 
 	case $cpu_arch in
 		"x86_64" | *"amd64"*)
-			docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host --user 0:0 --restart always amilys/embyserver:4.8.0.58
+			docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host --user 0:0 --restart always amilys/embyserver:latest
 			;;
 		"aarch64" | *"arm64"* | *"armv8"* | *"arm/v8"*)
-		        docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host  --user 0:0 --restart always amilys/embyserver_arm64v8:4.8.0.58
+		        docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host  --user 0:0 --restart always emby/embyserver_arm64v8:4.8.0.56
                         ;;
 		*)
 			echo "目前只支持intel64和amd64架构，你的架构是：$cpu_arch"
