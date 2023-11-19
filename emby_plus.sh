@@ -6,10 +6,10 @@ if [ $1 ]; then
 	cpu_arch=$(uname -m)
 	case $cpu_arch in
                 "x86_64" | *"amd64"*)
-                        docker pull emby/embyserver:4.8.0.56
+                        docker pull amilys/embyserver:latest
 			;;
                 "aarch64" | *"arm64"* | *"armv8"* | *"arm/v8"*)
-                        docker pull emby/embyserver_arm64v8:4.8.0.56
+                        docker pull amilys/embyserver:latest
                         ;;
                 *)
                         echo "目前只支持intel64和amd64架构，你的架构是：$cpu_arch"
@@ -17,7 +17,7 @@ if [ $1 ]; then
                         ;;
         esac
 	
-	docker_exist=$(docker images |grep emby/embyserver |grep 4.8.0.56)
+	docker_exist=$(docker images |grep amilys/embyserver |grep 4.8.0.58)
 	if [ -z "$docker_exist" ]; then
 		echo "拉取镜像失败，请检查网络，或者翻墙后再试"
 		exit 1
@@ -30,17 +30,16 @@ if [ $1 ]; then
 	fi
 
 	echo "测试xiaoya的联通性......."
-	wget -O /tmp/test.md "$docker_addr/README.md"
+	wget -q -O /tmp/test.md "$docker_addr/README.md"
 	test_size=$(du -k /tmp/test.md |cut -f1)
 	if [[ "$test_size" -eq 196 ]] || [[ "$test_size" -eq 0 ]]; then
 		echo "请检查xiaoya是否正常运行后再试"
 		exit 1
-	else
-		echo "文件长度：$test_size xiaoya运行正常"	
 	fi
 
+        mkdir -p $1/temp
 	rm -rf $1/xiaoya $1/config 
-        free_size=$(df $1 |tail -n1|awk '{print $4}')
+        free_size=$(df -P $1 |tail -n1|awk '{print $4}')
 	free_size=$((free_size))
         if [ "$free_size" -le 83886080  ]; then
 		free_size_G=$((free_size/1024/1024))
@@ -50,7 +49,6 @@ if [ $1 ]; then
 
 	mkdir -p $1/xiaoya
 	mkdir -p $1/config
-	mkdir -p $1/temp
 	chmod 755 $1
 	chown root:root $1
 	local_sha=$(docker inspect --format='{{index .RepoDigests 0}}' xiaoyaliu/glue:latest  |cut -f2 -d:)
@@ -80,10 +78,10 @@ if [ $1 ]; then
 
 	case $cpu_arch in
 		"x86_64" | *"amd64"*)
-			docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host --user 0:0 --restart always emby/embyserver:4.8.0.56
+			docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host --user 0:0 --restart always amilys/embyserver:latest
 			;;
 		"aarch64" | *"arm64"* | *"armv8"* | *"arm/v8"*)
-		        docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host  --user 0:0 --restart always emby/embyserver:4.8.0.56
+		        docker run -d --name emby -v $1/config:/config -v $1/xiaoya:/media --net=host  --user 0:0 --restart always amilys/embyserver_arm64v8:4.8.0.56
                         ;;
 		*)
 			echo "目前只支持intel64和amd64架构，你的架构是：$cpu_arch"
